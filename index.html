@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#E86A10">
+<title>Mission 2036 — Nemom & Kazhakkoottam Pilot</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+:root{
+  --saffron:#F26A1B; --saffron-d:#D2540A; --green:#15803D; --navy:#0E1630;
+  --ink:#15171E; --grey:#6B7280; --line:#ECEEF3; --bg:#F5F6FA; --card:#FFFFFF;
+  --ice:#EEF1F7; --ok:#16A34A; --warn:#E08600; --open:#E23B3B; --prog:#2F6BFF;
+  --soft:0 10px 30px rgba(20,28,60,.06); --soft2:0 6px 18px rgba(20,28,60,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--bg);
+  color:var(--ink);-webkit-font-smoothing:antialiased;font-size:15.5px;line-height:1.55;}
+.app{max-width:820px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative;padding-bottom:108px;}
+/* Header */
+header{background:linear-gradient(140deg,#0E1630,#1D2A55);color:#fff;padding:20px 22px 18px;position:sticky;top:0;z-index:50;}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--saffron),var(--green));
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:#fff;flex:none;
+  box-shadow:0 6px 16px rgba(242,106,27,.35)}
+.brand h1{font-size:19px;font-weight:800;line-height:1.1;letter-spacing:-.3px}
+.brand .sub{font-size:11.5px;color:#AFB9D8;font-weight:500;margin-top:2px}
+.rolebar{display:flex;gap:8px;margin-top:16px;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none}
+.rolebar::-webkit-scrollbar{display:none}
+.role{flex:none;border:none;background:rgba(255,255,255,.10);color:#dfe5f5;font-size:13.5px;font-weight:600;
+  padding:10px 18px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:.18s}
+.role:hover{background:rgba(255,255,255,.18)}
+.role.active{background:var(--saffron);color:#fff;box-shadow:0 6px 16px rgba(242,106,27,.4)}
+/* Views */
+.view{padding:22px;display:none;animation:fade .3s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.vtitle{font-size:26px;font-weight:800;color:var(--navy);margin-bottom:4px;letter-spacing:-.6px}
+.vsub{font-size:14px;color:var(--grey);margin-bottom:20px;line-height:1.5}
+.card{background:var(--card);border:none;border-radius:22px;padding:22px;margin-bottom:18px;box-shadow:var(--soft)}
+label{display:block;font-size:12.5px;font-weight:700;color:var(--navy);margin:16px 0 7px;letter-spacing:.1px}
+input,select,textarea{width:100%;padding:14px 16px;border:1.5px solid transparent;border-radius:14px;font-size:15px;
+  font-family:inherit;background:#F2F4F9;color:var(--ink);transition:.15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--saffron);background:#fff;
+  box-shadow:0 0 0 4px rgba(242,106,27,.12)}
+textarea{resize:vertical;min-height:88px}
+.btn{width:100%;background:linear-gradient(135deg,var(--saffron),#F58A3C);color:#fff;border:none;padding:16px;
+  border-radius:16px;font-size:16px;font-weight:700;cursor:pointer;margin-top:18px;transition:.18s;
+  box-shadow:0 8px 20px rgba(242,106,27,.28)}
+.btn:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(242,106,27,.34)}
+.btn.green{background:linear-gradient(135deg,#15803D,#1FA350);box-shadow:0 8px 20px rgba(21,128,61,.28)}
+.btn.ghost{background:#fff;color:var(--navy);border:1.5px solid var(--line);box-shadow:none}
+.ml{font-family:'Noto Sans Malayalam','Plus Jakarta Sans',sans-serif}
+/* KPI grid */
+.kgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;margin-bottom:18px}
+.kpi{background:#fff;border:none;border-radius:20px;padding:18px 14px;text-align:center;box-shadow:var(--soft2)}
+.kpi .n{font-size:30px;font-weight:800;color:var(--saffron);line-height:1;letter-spacing:-1px}
+.kpi.g .n{color:var(--green)} .kpi.n2 .n{color:var(--navy)}
+.kpi .l{font-size:11px;color:var(--grey);margin-top:8px;font-weight:600;line-height:1.25}
+/* badges */
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:5px 12px;border-radius:999px;color:#fff}
+.b-open{background:var(--open)} .b-prog{background:var(--prog)} .b-res{background:var(--ok)}
+.b-esc{background:var(--warn)}
+/* rows */
+.grow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;border:none;
+  border-radius:18px;margin-bottom:11px;background:#fff;cursor:pointer;transition:.16s;box-shadow:var(--soft2)}
+.grow:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(20,28,60,.10)}
+.grow .gid{font-size:11.5px;color:var(--grey);font-weight:700;letter-spacing:.2px}
+.grow .gtitle{font-size:15px;font-weight:700;margin:3px 0;color:var(--navy)}
+.grow .gmeta{font-size:12px;color:var(--grey)}
+.filters{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap}
+.filters select{width:auto;flex:1;min-width:130px;padding:11px 13px;font-size:13px}
+/* tabs */
+.tabs{display:flex;gap:10px;margin-bottom:18px}
+.tab{flex:1;padding:13px;border-radius:16px;border:none;background:#fff;font-weight:700;font-size:14px;
+  cursor:pointer;color:var(--grey);box-shadow:var(--soft2);transition:.16s}
+.tab.active{background:var(--navy);color:#fff}
+.bar{height:13px;background:var(--ice);border-radius:999px;overflow:hidden;margin:10px 0}
+.bar > i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--saffron),var(--green))}
+.brow{display:flex;justify-content:space-between;align-items:center;padding:15px 17px;border:none;
+  border-radius:16px;margin-bottom:10px;background:#fff;box-shadow:var(--soft2)}
+.brow .bn{font-size:14.5px;font-weight:700;color:var(--navy)}
+.brow .bm{font-size:12px;color:var(--grey);margin-top:2px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px}
+.chartbox{background:#fff;border:none;border-radius:20px;padding:18px;margin-bottom:16px;box-shadow:var(--soft2)}
+.chartbox h3{font-size:14.5px;color:var(--navy);margin-bottom:12px;font-weight:700;letter-spacing:-.2px}
+/* confirmation */
+.conf{text-align:center;padding:34px 18px}
+.conf .tick{width:74px;height:74px;border-radius:50%;background:linear-gradient(135deg,#15803D,#1FA350);color:#fff;
+  font-size:38px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;
+  box-shadow:0 10px 24px rgba(21,128,61,.32)}
+.conf .tid{font-size:26px;font-weight:800;color:var(--saffron);letter-spacing:1px;margin:10px 0}
+/* bottom nav (floating glass) */
+.nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);width:calc(100% - 28px);max-width:792px;
+  background:rgba(255,255,255,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.6);border-radius:24px;display:flex;z-index:60;
+  box-shadow:0 12px 34px rgba(14,22,48,.16);padding:8px 6px}
+.nav button{flex:1;border:none;background:none;padding:8px 2px;font-size:10.5px;color:var(--grey);
+  font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;
+  border-radius:16px;transition:.15s}
+.nav button .ic{font-size:21px}
+.nav button.active{color:var(--saffron);background:rgba(242,106,27,.10)}
+.pill{font-size:11.5px;color:var(--navy);background:var(--ice);padding:6px 13px;border-radius:999px;font-weight:700}
+.split{display:flex;gap:12px;align-items:center;justify-content:space-between}
+.note{font-size:12.5px;color:#9A5B16;background:#FFF6EC;border:1px solid #FCE3C6;border-radius:14px;
+  padding:13px 15px;margin-top:8px;line-height:1.45}
+.modal{position:fixed;inset:0;background:rgba(14,22,48,.55);display:none;align-items:flex-end;justify-content:center;
+  z-index:100;backdrop-filter:blur(3px)}
+.modal.open{display:flex}
+.sheet{background:#fff;width:100%;max-width:820px;border-radius:28px 28px 0 0;padding:26px 22px 30px;
+  max-height:86vh;overflow:auto}
+.sheet h3{font-size:18px;color:var(--navy);margin-bottom:4px;font-weight:800}
+.statusbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.statusbtns button{padding:14px;border-radius:14px;border:1.5px solid var(--line);background:#fff;font-weight:700;
+  font-size:13.5px;cursor:pointer;transition:.15s}
+.statusbtns button:hover{border-color:var(--saffron);background:#FFF6EC}
+.reset{font-size:11px;color:#9AA5C0;background:none;border:none;cursor:pointer;text-decoration:underline}
+.demoTag{font-size:10px;background:rgba(255,255,255,.16);color:#fff;padding:4px 10px;border-radius:999px;
+  font-weight:700;margin-left:auto;letter-spacing:.5px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <div class="logo">M26</div>
+      <div>
+        <h1>Mission 2036</h1>
+        <div class="sub">Nemom &amp; Kazhakkoottam Pilot · ജനസേവന പോർട്ടൽ</div>
+      </div>
+      <span class="demoTag">DEMO</span>
+    </div>
+    <div class="rolebar" id="rolebar">
+      <button class="role active" data-view="citizen">📱 Citizen</button>
+      <button class="role" data-view="track">🔎 Track</button>
+      <button class="role" data-view="desk">🗂️ Grievance Desk</button>
+      <button class="role" data-view="booth">📍 Booths</button>
+      <button class="role" data-view="seva">🤝 Seva</button>
+      <button class="role" data-view="shakha">🚩 Shakha</button>
+      <button class="role" data-view="dash">📊 Leadership</button>
+    </div>
+  </header>
+
+  <!-- CITIZEN -->
+  <section class="view active" id="v-citizen">
+    <div class="vtitle">Register a grievance</div>
+    <div class="vsub ml">പരാതി നൽകുക — we help every citizen, regardless of community or affiliation.</div>
+    <div class="card" id="grievForm">
+      <label>Your name / പേര്</label>
+      <input id="f-name" placeholder="e.g., Anil Kumar">
+      <label>Mobile number / മൊബൈൽ</label>
+      <input id="f-phone" placeholder="10-digit number" maxlength="10">
+      <label>Constituency / മണ്ഡലം</label>
+      <select id="f-con"></select>
+      <label>Ward / വാർഡ്</label>
+      <select id="f-ward"></select>
+      <label>Issue category / വിഭാഗം</label>
+      <select id="f-cat"></select>
+      <label>Describe the issue / വിവരണം</label>
+      <textarea id="f-desc" placeholder="Briefly describe the problem and the location"></textarea>
+      <button class="btn" onclick="submitGrievance()">Submit grievance →</button>
+      <div class="note">In the live system this also accepts submissions over <b>WhatsApp</b> and routes them to the booth &amp; ward automatically.</div>
+    </div>
+    <div class="card conf" id="grievDone" style="display:none">
+      <div class="tick">✓</div>
+      <div style="font-weight:700;color:var(--navy);font-size:15px">Grievance registered</div>
+      <div class="tid" id="newTid">—</div>
+      <div class="vsub">Save this tracking ID. You will get updates on WhatsApp.<br>Our volunteer will follow up shortly.</div>
+      <button class="btn green" onclick="resetForm()">Register another</button>
+    </div>
+  </section>
+
+  <!-- TRACK -->
+  <section class="view" id="v-track">
+    <div class="vtitle">Track your grievances</div>
+    <div class="vsub">Enter your mobile number to see the status of issues you reported.</div>
+    <div class="card">
+      <label>Mobile number</label>
+      <div class="split"><input id="t-phone" placeholder="10-digit number" maxlength="10"><button class="btn" style="width:auto;margin-top:0;padding:11px 18px" onclick="trackByPhone()">Find</button></div>
+      <div class="note">Demo tip: try <b>9847000001</b> to see seeded examples, or submit one in the Citizen tab first.</div>
+    </div>
+    <div id="trackResults"></div>
+  </section>
+
+  <!-- DESK -->
+  <section class="view" id="v-desk">
+    <div class="vtitle">Grievance Desk</div>
+    <div class="vsub">Triage, assign and resolve. Every case is tracked to closure.</div>
+    <div class="kgrid">
+      <div class="kpi"><div class="n" id="d-total">0</div><div class="l">Total logged</div></div>
+      <div class="kpi n2"><div class="n" id="d-open">0</div><div class="l">Open + in&nbsp;progress</div></div>
+      <div class="kpi g"><div class="n" id="d-rate">0%</div><div class="l">Resolution rate</div></div>
+    </div>
+    <div class="filters">
+      <select id="flt-con" onchange="renderDesk()"></select>
+      <select id="flt-status" onchange="renderDesk()">
+        <option value="">All statuses</option><option>Open</option><option>In Progress</option><option>Resolved</option><option>Escalated</option>
+      </select>
+      <select id="flt-cat" onchange="renderDesk()"></select>
+    </div>
+    <div id="deskList"></div>
+  </section>
+
+  <!-- BOOTH -->
+  <section class="view" id="v-booth">
+    <div class="vtitle">Booth management</div>
+    <div class="vsub">Build and keep every booth committee active — year-round, not just at poll time.</div>
+    <div class="tabs" id="boothTabs"></div>
+    <div class="card">
+      <div class="split"><b style="color:var(--navy);font-size:13px" id="cov-label">Coverage</b><span class="pill" id="cov-pill">—</span></div>
+      <div class="bar"><i id="cov-bar" style="width:0%"></i></div>
+      <div class="vsub" id="cov-detail" style="margin:0"></div>
+    </div>
+    <div id="boothList"></div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="view" id="v-dash">
+    <div class="split"><div><div class="vtitle">Leadership dashboard</div><div class="vsub">Live from the field — updates as grievances and booths change.</div></div><button class="reset" onclick="resetData()">reset demo data</button></div>
+    <div class="kgrid">
+      <div class="kpi"><div class="n" id="k-booth">0%</div><div class="l">Booths active</div></div>
+      <div class="kpi g"><div class="n" id="k-vol">0</div><div class="l">Volunteers</div></div>
+      <div class="kpi n2"><div class="n" id="k-wa">0</div><div class="l">WhatsApp contacts</div></div>
+      <div class="kpi"><div class="n" id="k-log">0</div><div class="l">Grievances logged</div></div>
+      <div class="kpi g"><div class="n" id="k-res">0</div><div class="l">Resolved</div></div>
+      <div class="kpi n2"><div class="n" id="k-rate">0%</div><div class="l">Resolution rate</div></div>
+      <div class="kpi"><div class="n" id="k-seva">0</div><div class="l">Seva activities</div></div>
+      <div class="kpi g"><div class="n" id="k-benef">0</div><div class="l">Beneficiaries reached</div></div>
+      <div class="kpi n2"><div class="n" id="k-shk">0</div><div class="l">Shakhas linked</div></div>
+    </div>
+    <div class="chartbox"><h3>Weekly grievances — logged vs resolved</h3><canvas id="ch-trend" height="150"></canvas></div>
+    <div class="chartbox"><h3>Grievances by status</h3><canvas id="ch-status" height="150"></canvas></div>
+    <div class="chartbox"><h3>Grievances by category</h3><canvas id="ch-cat" height="160"></canvas></div>
+    <div class="chartbox"><h3>Booth coverage by constituency</h3><canvas id="ch-booth" height="150"></canvas></div>
+    <div class="chartbox"><h3>Seva — beneficiaries reached by type</h3><canvas id="ch-seva" height="160"></canvas></div>
+  </section>
+
+  <!-- SEVA -->
+  <section class="view" id="v-seva">
+    <div class="vtitle">Seva — service first</div>
+    <div class="vsub ml">സേവനം · Recorded as service, never as politics. Goodwill follows over time.</div>
+    <div class="kgrid">
+      <div class="kpi g"><div class="n" id="sv-acts">0</div><div class="l">Seva activities</div></div>
+      <div class="kpi"><div class="n" id="sv-ben">0</div><div class="l">People served</div></div>
+      <div class="kpi n2"><div class="n" id="sv-wards">0</div><div class="l">Wards covered</div></div>
+    </div>
+    <div class="card">
+      <label>Activity type / പ്രവർത്തനം</label><select id="s-type"></select>
+      <label>Conducted by</label><select id="s-by"></select>
+      <label>Constituency</label><select id="s-con"></select>
+      <label>Ward / locality</label><select id="s-ward"></select>
+      <label>People served</label><input id="s-ben" type="number" placeholder="e.g., 120">
+      <label>Note</label><textarea id="s-note" placeholder="What was done, and where"></textarea>
+      <button class="btn green" onclick="submitSeva()">Record seva activity →</button>
+      <div class="note">Seva-first rule: documented as <b>service, not politics</b> — no party branding on relief or welfare. This is what keeps Sangh cooperation and public trust intact.</div>
+    </div>
+    <div class="vtitle" style="font-size:15px;margin:6px 0 8px">Recent seva</div>
+    <div id="sevaList"></div>
+  </section>
+
+  <!-- SHAKHA -->
+  <section class="view" id="v-shakha">
+    <div class="vtitle">Shakha &amp; karyakarta network</div>
+    <div class="vsub">The Sangh ground strength that powers every booth committee.</div>
+    <div class="tabs" id="shakhaTabs"></div>
+    <div class="card"><div class="vsub" id="shk-sum" style="margin:0"></div></div>
+    <div id="shakhaList"></div>
+    <div class="note">Booth committees are built from these existing shakhas and karyakartas — the app links Sangh ground strength to each booth, it does not create a parallel cadre.</div>
+  </section>
+
+  <nav class="nav" id="nav">
+    <button class="active" data-view="citizen"><span class="ic">📱</span>Report</button>
+    <button data-view="track"><span class="ic">🔎</span>Track</button>
+    <button data-view="desk"><span class="ic">🗂️</span>Desk</button>
+    <button data-view="booth"><span class="ic">📍</span>Booths</button>
+    <button data-view="seva"><span class="ic">🤝</span>Seva</button>
+    <button data-view="shakha"><span class="ic">🚩</span>Shakha</button>
+    <button data-view="dash"><span class="ic">📊</span>Dash</button>
+  </nav>
+</div>
+
+<!-- modal -->
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+
+<script>
+/* ---------- CONFIG ---------- */
+const CONS = {
+  "Nemom":        {booths:179, code:"NM", wards:["Thirumala","Poojappura","Mudavanmugal","Nemom","Pappanamcode","Karamana","Kaladi","Punchakkari","Thiruvallam","Ambalathara","Attukal","Kamaleswaram"]},
+  "Kazhakkoottam":{booths:190, code:"KZ", wards:["Technopark","Kazhakkoottam","Kariavattom","Sreekaryam","Chanthavila","Attipra","Menamkulam","Pothencode","Andoorkonam","Kadinamkulam"]}
+};
+const CATS = ["Roads & potholes","Water supply","Electricity","Pension delay","Ration / certificate","Sanitation","Street lighting","Drainage","Other"];
+const STAT = ["Open","In Progress","Resolved","Escalated"];
+const NAMES = ["Anil Kumar","Lakshmi Nair","Suresh Babu","Reshma S","Vinod K","Fathima Beevi","George Mathew","Deepa R","Rajan P","Sania Thomas","Hari Krishnan","Bindu M","Salim K","Anitha Raj","Joseph V","Meera Pillai"];
+const SEVA_TYPES = ["Medical camp","Disaster relief","Education support","Tribal welfare","Blood donation","Food distribution","Cleanliness drive"];
+const SEVA_BY = ["Seva Bharati","Local shakha unit","ABVP","Mahila volunteers"];
+const LS_KEY = "m2036_demo_v2";
+
+/* ---------- STATE ---------- */
+let DB = load() || seed();
+
+function seed(){
+  const g = [];
+  let n = 1;
+  const now = new Date();
+  // create 9 weeks of grievances for a realistic trend
+  for(let wk=8; wk>=0; wk--){
+    const perWeek = Math.round(6 + (8-wk)*4 + Math.random()*4); // grows over time
+    for(let i=0;i<perWeek;i++){
+      const con = Math.random()<0.5 ? "Nemom":"Kazhakkoottam";
+      const c = CONS[con];
+      const d = new Date(now); d.setDate(d.getDate() - wk*7 - Math.floor(Math.random()*6));
+      // older weeks mostly resolved; recent weeks more open
+      let st;
+      const r = Math.random();
+      if(wk>=4) st = r<0.82?"Resolved":(r<0.92?"Escalated":"In Progress");
+      else if(wk>=2) st = r<0.55?"Resolved":(r<0.7?"Escalated":(r<0.88?"In Progress":"Open"));
+      else st = r<0.25?"Resolved":(r<0.35?"Escalated":(r<0.65?"In Progress":"Open"));
+      g.push({
+        id: c.code+"-"+String(1000+n).slice(1),
+        name: NAMES[Math.floor(Math.random()*NAMES.length)],
+        phone: "98470"+String(10000+n).slice(1),
+        con, ward: c.wards[Math.floor(Math.random()*c.wards.length)],
+        cat: CATS[Math.floor(Math.random()*CATS.length)],
+        desc: "Reported issue requiring attention in the locality.",
+        status: st, date: d.toISOString().slice(0,10)
+      });
+      n++;
+    }
+  }
+  // a couple of guaranteed track-demo rows
+  g.push({id:"NM-501",name:"Demo Citizen",phone:"9847000001",con:"Nemom",ward:"Poojappura",cat:"Water supply",desc:"No water supply for three days in our street.",status:"In Progress",date:new Date(now-6e8).toISOString().slice(0,10)});
+  g.push({id:"NM-502",name:"Demo Citizen",phone:"9847000001",con:"Nemom",ward:"Poojappura",cat:"Street lighting",desc:"Street light not working near the temple junction.",status:"Resolved",date:new Date(now-12e8).toISOString().slice(0,10)});
+
+  // booths
+  const booths = [];
+  Object.entries(CONS).forEach(([con,c])=>{
+    for(let i=1;i<=c.booths;i++){
+      const r = Math.random();
+      const status = r<0.62?"Active":(r<0.85?"President named":"Vacant");
+      booths.push({id:c.code+"-B"+String(i).padStart(3,"0"), con,
+        no:i, ward:c.wards[i%c.wards.length], status,
+        vols: status==="Active"?(3+Math.floor(Math.random()*9)):(status==="President named"?(1+Math.floor(Math.random()*3)):0)});
+    }
+  });
+  // seva activities (last ~10 weeks)
+  const seva=[]; let sn=1;
+  for(let i=0;i<22;i++){
+    const con=Math.random()<0.5?"Nemom":"Kazhakkoottam"; const c=CONS[con];
+    const d=new Date(now); d.setDate(d.getDate()-Math.floor(Math.random()*70));
+    seva.push({id:"SV-"+String(100+sn).slice(1), type:SEVA_TYPES[Math.floor(Math.random()*SEVA_TYPES.length)],
+      con, ward:c.wards[Math.floor(Math.random()*c.wards.length)], by:SEVA_BY[Math.floor(Math.random()*SEVA_BY.length)],
+      beneficiaries:20+Math.floor(Math.random()*180), date:d.toISOString().slice(0,10),
+      note:"Service activity conducted for the local community."});
+    sn++;
+  }
+  // shakhas
+  const shakhas=[]; const shakhaCount={Nemom:38, Kazhakkoottam:34};
+  Object.entries(shakhaCount).forEach(([con,cnt])=>{
+    const c=CONS[con];
+    for(let i=1;i<=cnt;i++){
+      shakhas.push({id:c.code+"-S"+String(i).padStart(2,"0"), con,
+        name:c.wards[i%c.wards.length]+" Shakha "+i,
+        karyakartas:8+Math.floor(Math.random()*32), linkedBooths:1+Math.floor(Math.random()*4),
+        type: Math.random()<0.65?"Daily":(Math.random()<0.5?"Weekly (Milan)":"Monthly (Mandali)")});
+    }
+  });
+  const db = {grievances:g, booths, seva, shakhas,
+    volunteers: 1840, waContacts: 38250, lastId:n};
+  return db;
+}
+function save(){ try{localStorage.setItem(LS_KEY, JSON.stringify(DB));}catch(e){} }
+function load(){ try{const s=localStorage.getItem(LS_KEY);return s?JSON.parse(s):null;}catch(e){return null;} }
+function resetData(){ DB=seed(); save(); renderAll(); alert("Demo data reset."); }
+
+/* ---------- NAV ---------- */
+function show(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('v-'+view).classList.add('active');
+  document.querySelectorAll('#rolebar .role').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+  window.scrollTo(0,0);
+  if(view==='desk') renderDesk();
+  if(view==='booth') renderBooth();
+  if(view==='seva') renderSeva();
+  if(view==='shakha') renderShakha();
+  if(view==='dash') renderDash();
+}
+document.querySelectorAll('#rolebar .role, #nav button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.view)));
+
+/* ---------- CITIZEN FORM ---------- */
+function fillSelect(el,arr,ph){ el.innerHTML = (ph?`<option value="">${ph}</option>`:"") + arr.map(a=>`<option>${a}</option>`).join(""); }
+function initForm(){
+  fillSelect(document.getElementById('f-con'), Object.keys(CONS));
+  fillSelect(document.getElementById('f-cat'), CATS);
+  syncWards();
+  document.getElementById('f-con').addEventListener('change',syncWards);
+}
+function syncWards(){
+  const con=document.getElementById('f-con').value || Object.keys(CONS)[0];
+  fillSelect(document.getElementById('f-ward'), CONS[con].wards);
+}
+function submitGrievance(){
+  const name=document.getElementById('f-name').value.trim();
+  const phone=document.getElementById('f-phone').value.trim();
+  const con=document.getElementById('f-con').value;
+  const ward=document.getElementById('f-ward').value;
+  const cat=document.getElementById('f-cat').value;
+  const desc=document.getElementById('f-desc').value.trim();
+  if(!name||phone.length<10||!desc){ alert("Please enter your name, a 10-digit number, and a description."); return; }
+  DB.lastId++;
+  const id = CONS[con].code+"-"+String(1000+DB.lastId).slice(1);
+  DB.grievances.unshift({id,name,phone,con,ward,cat,desc,status:"Open",date:new Date().toISOString().slice(0,10)});
+  DB.waContacts++;
+  save();
+  document.getElementById('newTid').textContent = id;
+  document.getElementById('grievForm').style.display='none';
+  document.getElementById('grievDone').style.display='block';
+}
+function resetForm(){
+  ['f-name','f-phone','f-desc'].forEach(i=>document.getElementById(i).value="");
+  document.getElementById('grievForm').style.display='block';
+  document.getElementById('grievDone').style.display='none';
+}
+
+/* ---------- TRACK ---------- */
+function statusBadge(s){
+  const m={"Open":"b-open","In Progress":"b-prog","Resolved":"b-res","Escalated":"b-esc"};
+  return `<span class="badge ${m[s]}">${s}</span>`;
+}
+function trackByPhone(){
+  const p=document.getElementById('t-phone').value.trim();
+  const rows=DB.grievances.filter(g=>g.phone===p);
+  const box=document.getElementById('trackResults');
+  if(!rows.length){ box.innerHTML=`<div class="card vsub">No grievances found for that number. Try 9847000001 or submit one first.</div>`; return; }
+  box.innerHTML = rows.map(g=>`<div class="grow" onclick="openGriev('${g.id}')">
+    <div><div class="gid">${g.id} · ${g.date}</div><div class="gtitle">${g.cat}</div><div class="gmeta">${g.con} · ${g.ward}</div></div>
+    <div>${statusBadge(g.status)}</div></div>`).join("");
+}
+
+/* ---------- DESK ---------- */
+function initDeskFilters(){
+  fillSelect(document.getElementById('flt-con'), Object.keys(CONS), "All constituencies");
+  fillSelect(document.getElementById('flt-cat'), CATS, "All categories");
+}
+function deskFiltered(){
+  const c=document.getElementById('flt-con').value, s=document.getElementById('flt-status').value, k=document.getElementById('flt-cat').value;
+  return DB.grievances.filter(g=>(!c||g.con===c)&&(!s||g.status===s)&&(!k||g.cat===k));
+}
+function renderDesk(){
+  const total=DB.grievances.length;
+  const openn=DB.grievances.filter(g=>g.status==="Open"||g.status==="In Progress").length;
+  const res=DB.grievances.filter(g=>g.status==="Resolved"||g.status==="Escalated").length;
+  document.getElementById('d-total').textContent=total;
+  document.getElementById('d-open').textContent=openn;
+  document.getElementById('d-rate').textContent= total?Math.round(res/total*100)+"%":"0%";
+  const rows=deskFiltered().slice(0,60);
+  document.getElementById('deskList').innerHTML = rows.map(g=>`<div class="grow" onclick="openGriev('${g.id}')">
+    <div><div class="gid">${g.id} · ${g.date}</div><div class="gtitle">${g.cat}</div>
+    <div class="gmeta">${g.name} · ${g.con} · ${g.ward}</div></div>
+    <div>${statusBadge(g.status)}</div></div>`).join("") || `<div class="card vsub">No grievances match these filters.</div>`;
+}
+
+/* ---------- MODAL ---------- */
+function openGriev(id){
+  const g=DB.grievances.find(x=>x.id===id); if(!g)return;
+  document.getElementById('sheet').innerHTML=`
+    <h3>${g.cat} ${statusBadge(g.status)}</h3>
+    <div class="vsub">${g.id} · reported ${g.date}</div>
+    <div class="card" style="margin-top:6px"><b>${g.name}</b> · ${g.phone}<br><span class="vsub">${g.con} · ${g.ward}</span>
+      <p style="font-size:13.5px;margin-top:8px">${g.desc}</p></div>
+    <label>Update status</label>
+    <div class="statusbtns">
+      ${STAT.map(s=>`<button onclick="setStatus('${g.id}','${s}')">${s}</button>`).join("")}
+    </div>
+    <button class="btn ghost" style="margin-top:14px" onclick="closeModal()">Close</button>`;
+  document.getElementById('modal').classList.add('open');
+}
+function setStatus(id,s){
+  const g=DB.grievances.find(x=>x.id===id); if(g){g.status=s; save();}
+  closeModal(); renderDesk(); renderDash();
+}
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click',e=>{ if(e.target.id==='modal') closeModal(); });
+
+/* ---------- BOOTH ---------- */
+let boothTab="Nemom";
+function initBoothTabs(){
+  document.getElementById('boothTabs').innerHTML = Object.keys(CONS).map(c=>
+    `<button class="tab ${c===boothTab?'active':''}" onclick="boothTab='${c}';renderBooth()">${c}</button>`).join("");
+}
+function renderBooth(){
+  initBoothTabs();
+  const list=DB.booths.filter(b=>b.con===boothTab);
+  const active=list.filter(b=>b.status==="Active").length;
+  const pct=Math.round(active/list.length*100);
+  document.getElementById('cov-label').textContent=boothTab+" — active committees";
+  document.getElementById('cov-pill').textContent=pct+"% active";
+  document.getElementById('cov-bar').style.width=pct+"%";
+  const named=list.filter(b=>b.status==="President named").length;
+  const vacant=list.filter(b=>b.status==="Vacant").length;
+  document.getElementById('cov-detail').innerHTML=
+    `<span class="dot" style="background:var(--green)"></span>${active} active &nbsp; <span class="dot" style="background:var(--warn)"></span>${named} president named &nbsp; <span class="dot" style="background:var(--open)"></span>${vacant} vacant`;
+  document.getElementById('boothList').innerHTML = list.slice(0,40).map(b=>{
+    const col = b.status==="Active"?"var(--green)":b.status==="President named"?"var(--warn)":"var(--open)";
+    return `<div class="brow"><div><div class="bn">Booth ${b.no} <span class="bm">· ${b.ward}</span></div>
+      <div class="bm"><span class="dot" style="background:${col}"></span>${b.status} · ${b.vols} volunteers</div></div>
+      ${b.status!=="Active"?`<button class="role" style="background:var(--ice);color:var(--navy)" onclick="activateBooth('${b.id}')">Mark active</button>`:`<span class="badge b-res">✓</span>`}</div>`;
+  }).join("");
+  document.getElementById('boothList').insertAdjacentHTML('beforeend',
+    `<div class="vsub" style="text-align:center;margin-top:8px">Showing 40 of ${list.length} booths · full list in the live CRM</div>`);
+}
+function activateBooth(id){
+  const b=DB.booths.find(x=>x.id===id); if(b){b.status="Active"; if(b.vols<3)b.vols=3+Math.floor(Math.random()*5); save();}
+  renderBooth(); renderDash();
+}
+
+/* ---------- SEVA ---------- */
+function initSeva(){
+  fillSelect(document.getElementById('s-type'), SEVA_TYPES);
+  fillSelect(document.getElementById('s-by'), SEVA_BY);
+  fillSelect(document.getElementById('s-con'), Object.keys(CONS));
+  syncSevaWards();
+  document.getElementById('s-con').addEventListener('change',syncSevaWards);
+}
+function syncSevaWards(){
+  const con=document.getElementById('s-con').value || Object.keys(CONS)[0];
+  fillSelect(document.getElementById('s-ward'), CONS[con].wards);
+}
+function submitSeva(){
+  const type=document.getElementById('s-type').value, by=document.getElementById('s-by').value,
+    con=document.getElementById('s-con').value, ward=document.getElementById('s-ward').value,
+    ben=parseInt(document.getElementById('s-ben').value||'0',10), note=document.getElementById('s-note').value.trim();
+  if(!ben||ben<1){ alert("Please enter how many people were served."); return; }
+  DB.seva.unshift({id:"SV-"+String(100+DB.seva.length+1).slice(1),type,by,con,ward,beneficiaries:ben,
+    date:new Date().toISOString().slice(0,10),note});
+  save(); renderSeva();
+  document.getElementById('s-ben').value=''; document.getElementById('s-note').value='';
+  alert("Seva activity recorded.");
+}
+function renderSeva(){
+  document.getElementById('sv-acts').textContent=DB.seva.length;
+  document.getElementById('sv-ben').textContent=DB.seva.reduce((a,s)=>a+s.beneficiaries,0).toLocaleString('en-IN');
+  document.getElementById('sv-wards').textContent=new Set(DB.seva.map(s=>s.con+'|'+s.ward)).size;
+  document.getElementById('sevaList').innerHTML=DB.seva.slice(0,30).map(s=>`<div class="grow">
+    <div><div class="gid">${s.id} · ${s.date}</div><div class="gtitle">${s.type}</div>
+    <div class="gmeta">${s.con} · ${s.ward} · by ${s.by}</div></div>
+    <div style="text-align:right"><div style="font-weight:800;color:var(--green);font-size:17px">${s.beneficiaries}</div><div class="gmeta">served</div></div></div>`).join("");
+}
+
+/* ---------- SHAKHA ---------- */
+let shakhaTab="Nemom";
+function initShakhaTabs(){
+  document.getElementById('shakhaTabs').innerHTML=Object.keys(CONS).map(c=>
+    `<button class="tab ${c===shakhaTab?'active':''}" onclick="shakhaTab='${c}';renderShakha()">${c}</button>`).join("");
+}
+function renderShakha(){
+  initShakhaTabs();
+  const list=DB.shakhas.filter(s=>s.con===shakhaTab);
+  const kary=list.reduce((a,s)=>a+s.karyakartas,0);
+  const linked=list.reduce((a,s)=>a+s.linkedBooths,0);
+  const boothsTotal=DB.booths.filter(b=>b.con===shakhaTab).length;
+  document.getElementById('shk-sum').innerHTML=
+    `<b style="color:var(--navy);font-size:15px">${list.length}</b> shakhas &nbsp;·&nbsp; <b style="color:var(--navy);font-size:15px">${kary.toLocaleString('en-IN')}</b> karyakartas &nbsp;·&nbsp; <b style="color:var(--navy);font-size:15px">${linked}</b> of ${boothsTotal} booths linked`;
+  document.getElementById('shakhaList').innerHTML=list.slice(0,40).map(s=>`<div class="brow">
+    <div><div class="bn">${s.name}</div><div class="bm">${s.type} · ${s.linkedBooths} booth(s) linked</div></div>
+    <div style="text-align:right"><div style="font-weight:800;color:var(--saffron);font-size:16px">${s.karyakartas}</div><div class="bm">karyakartas</div></div></div>`).join("");
+}
+
+/* ---------- DASHBOARD ---------- */
+let charts={};
+function renderDash(){
+  const total=DB.grievances.length;
+  const res=DB.grievances.filter(g=>g.status==="Resolved"||g.status==="Escalated").length;
+  const activeB=DB.booths.filter(b=>b.status==="Active").length;
+  document.getElementById('k-booth').textContent=Math.round(activeB/DB.booths.length*100)+"%";
+  document.getElementById('k-vol').textContent=DB.volunteers.toLocaleString('en-IN');
+  document.getElementById('k-wa').textContent=DB.waContacts.toLocaleString('en-IN');
+  document.getElementById('k-log').textContent=total.toLocaleString('en-IN');
+  document.getElementById('k-res').textContent=res.toLocaleString('en-IN');
+  document.getElementById('k-rate').textContent=total?Math.round(res/total*100)+"%":"0%";
+  document.getElementById('k-seva').textContent=DB.seva.length;
+  document.getElementById('k-benef').textContent=DB.seva.reduce((a,s)=>a+s.beneficiaries,0).toLocaleString('en-IN');
+  document.getElementById('k-shk').textContent=DB.shakhas.length;
+  if(typeof Chart==='undefined') return;
+  drawTrend(); drawStatus(); drawCat(); drawBoothChart(); drawSeva();
+}
+function drawSeva(){
+  const counts=SEVA_TYPES.map(t=>DB.seva.filter(s=>s.type===t).reduce((a,s)=>a+s.beneficiaries,0));
+  mkChart('ch-seva','bar',{labels:SEVA_TYPES.map(t=>t.split(' ')[0]),datasets:[{label:'Beneficiaries',data:counts,backgroundColor:'#126C3A',borderRadius:5}]},
+    {plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}},x:{ticks:{font:{size:9.5}}}}});
+}
+function weekKey(dstr){ const d=new Date(dstr); const onejan=new Date(d.getFullYear(),0,1);
+  return Math.ceil((((d-onejan)/86400000)+onejan.getDay()+1)/7); }
+function drawTrend(){
+  // last 9 weeks
+  const buckets={};
+  const now=new Date();
+  const labels=[]; const logged=[]; const resolved=[];
+  for(let w=8;w>=0;w--){
+    const start=new Date(now); start.setDate(start.getDate()-w*7-now.getDay());
+    const end=new Date(start); end.setDate(end.getDate()+7);
+    const lab="W-"+w;
+    labels.push(w===0?"This wk":(w+"w ago"));
+    let lg=0,rs=0;
+    DB.grievances.forEach(g=>{const d=new Date(g.date); if(d>=start&&d<end){lg++; if(g.status==="Resolved")rs++;}});
+    logged.push(lg); resolved.push(rs);
+  }
+  mkChart('ch-trend','line',{labels,datasets:[
+    {label:'Logged',data:logged,borderColor:'#E86A10',backgroundColor:'rgba(232,106,16,.12)',fill:true,tension:.35},
+    {label:'Resolved',data:resolved,borderColor:'#126C3A',backgroundColor:'rgba(18,108,58,.10)',fill:true,tension:.35}
+  ]},{plugins:{legend:{display:true,labels:{boxWidth:12,font:{size:11}}}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}});
+}
+function drawStatus(){
+  const counts=STAT.map(s=>DB.grievances.filter(g=>g.status===s).length);
+  mkChart('ch-status','doughnut',{labels:STAT,datasets:[{data:counts,
+    backgroundColor:['#DC2626','#2563EB','#16A34A','#D97706'],borderWidth:0}]},
+    {plugins:{legend:{position:'right',labels:{boxWidth:12,font:{size:11}}}},cutout:'60%'});
+}
+function drawCat(){
+  const counts=CATS.map(c=>DB.grievances.filter(g=>g.cat===c).length);
+  mkChart('ch-cat','bar',{labels:CATS.map(c=>c.split(' ')[0]),datasets:[{data:counts,backgroundColor:'#1B2752',borderRadius:5}]},
+    {plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}},x:{ticks:{font:{size:9.5}}}}});
+}
+function drawBoothChart(){
+  const cons=Object.keys(CONS);
+  const active=cons.map(c=>DB.booths.filter(b=>b.con===c&&b.status==="Active").length);
+  const named=cons.map(c=>DB.booths.filter(b=>b.con===c&&b.status==="President named").length);
+  const vac=cons.map(c=>DB.booths.filter(b=>b.con===c&&b.status==="Vacant").length);
+  mkChart('ch-booth','bar',{labels:cons,datasets:[
+    {label:'Active',data:active,backgroundColor:'#126C3A',borderRadius:4},
+    {label:'President named',data:named,backgroundColor:'#D97706',borderRadius:4},
+    {label:'Vacant',data:vac,backgroundColor:'#DC2626',borderRadius:4}
+  ]},{plugins:{legend:{labels:{boxWidth:12,font:{size:11}}}},scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true}}});
+}
+function mkChart(id,type,data,opts){
+  if(charts[id]) charts[id].destroy();
+  charts[id]=new Chart(document.getElementById(id),{type,data,options:Object.assign({responsive:true,maintainAspectRatio:false},opts)});
+}
+
+/* ---------- INIT ---------- */
+function renderAll(){ renderDesk(); renderBooth(); renderSeva(); renderShakha(); renderDash(); }
+initForm(); initDeskFilters(); initBoothTabs(); initSeva(); initShakhaTabs();
+renderDesk();
+window.addEventListener('load',()=>{ if(typeof Chart!=='undefined'){/* charts drawn when dash opens */} });
+</script>
+</body>
+</html>
